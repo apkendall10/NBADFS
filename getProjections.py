@@ -1,6 +1,7 @@
 import pandas as pd, numpy as np
 from bs4 import BeautifulSoup
 import requests
+from utils import format_fpath
 
 def parse_player(player):
     temp = [x.strip() for x in player.split("\n") if len(x.strip()) > 0]
@@ -33,4 +34,4 @@ for pos in df.Pos.unique():
 
 df.loc[:,'Cost'] = df.Cost.apply(lambda x: int(''.join(x[1:].split(','))))
 
-df.to_csv("data.csv", index=False)
+df.to_csv(format_fpath('proj'), index=False)

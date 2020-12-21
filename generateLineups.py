@@ -3,8 +3,9 @@ import cvxpy as cp
 import cvxopt
 import pandas as pd
 import datetime as dt
+from utils import format_fpath
 
-data = pd.read_csv('data.csv')
+data = pd.read_csv(format_fpath('proj'))
 
 fp_col = 'FP'
 df = data.copy()
@@ -29,4 +30,4 @@ for round in range(1,26):
     selections = picks if selections is None else selections.append(picks)
     cur_proj.loc[picks.index] = cur_proj.loc[picks.index].values * .95
 
-selections.to_csv('selections{}.csv'.format(dt.date.today()), index = False)
+selections.to_csv(format_fpath('line'))
