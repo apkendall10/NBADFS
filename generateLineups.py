@@ -30,4 +30,4 @@ for round in range(1,26):
     selections = picks if selections is None else selections.append(picks)
     cur_proj.loc[picks.index] = cur_proj.loc[picks.index].values * .95
 
-selections.to_csv(format_fpath('line'))
+selections.to_csv(format_fpath('line'), index = False)
