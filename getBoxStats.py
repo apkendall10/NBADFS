@@ -5,7 +5,7 @@ import argparse
 from utils import format_fpath
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-d', dest = 'date', default = str(dt.date.today()))
+parser.add_argument('-d', dest = 'date', default = str(dt.date.today() - dt.timedelta(days = 1)))
 args = parser.parse_args()
 
 year, month, day = [int(x) for x in args.date.split('-')]
