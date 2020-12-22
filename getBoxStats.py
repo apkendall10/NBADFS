@@ -21,7 +21,7 @@ def boxStats(date):
             for idx in [home_full_index, away_full_index]:
                 temp = t[idx]
                 temp.columns = temp.columns.droplevel(0)
-                temp = temp.set_index('Starters').drop('Reserves').drop('Team Totals')
+                temp = temp.set_index('Starters').drop('Reserves').drop('Team Totals').fillna(0)
                 stats = temp if stats is None else stats.append(temp)
 
         stats.drop(stats[stats.MP.str[:3] == 'Did'].index, inplace=True)
