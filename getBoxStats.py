@@ -1,15 +1,22 @@
 import pandas as pd
 import datetime as dt
 import numpy as np
+import argparse
 from utils import format_fpath
 
+parser = argparse.ArgumentParser()
+parser.add_argument('-d', dest = 'date', default = str(dt.date.today()))
+args = parser.parse_args()
 
-date = dt.date(2020,1,10)
+year, month, day = [int(x) for x in args.date.split('-')]
+date = dt.date(year, month, day)
+
 url = 'https://www.basketball-reference.com/boxscores/?month={}&day={}&year={}'.format(date.month, date.day, date.year)
-tables = pd.read_html(url)
 team_map = pd.read_csv('team_map.csv').set_index('City').code.to_dict()
-games = [team_map[tables[x].iloc[1,0]] for x in range(0,len(tables)-3,3)]
 
+tables = pd.read_html(url)
+
+games = [team_map[tables[x].iloc[1,0]] for x in range(0,len(tables)-3,3)]
 url_base = 'https://www.basketball-reference.com/boxscores/{}0{}.html'
 home_full_index = 0
 away_full_index = 8
