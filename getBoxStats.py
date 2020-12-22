@@ -12,8 +12,6 @@ def boxStats(date):
         team_map = pd.read_csv('team_map.csv').set_index('City').code.to_dict()
         games = [team_map[tables[x].iloc[1,0]] for x in range(0,len(tables)-3,3)]
         url_base = 'https://www.basketball-reference.com/boxscores/{}0{}.html'
-        home_full_index = 0
-        away_full_index = 8
 
         stats = None
         for g in games:
@@ -28,9 +26,10 @@ def boxStats(date):
         stats.drop(stats[stats.MP.str[:3] == 'Not'].index, inplace=True)
         stats['FP'] = stats.PTS.astype('int') + stats.TRB.astype('int') * 1.2 + stats.AST.astype('int') * 1.5 + stats.BLK.astype('int') * 3 + stats.STL.astype('int') * 3 - stats.TOV.astype('int')
         stats.to_csv(format_fpath('stat', date))
+
     except:
         print('No games for {}'.format(date))
-        traceback.print_exc(file = sys.stdin)
+        traceback.print_exc(file = sys.stdout)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
