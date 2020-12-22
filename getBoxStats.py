@@ -18,7 +18,7 @@ def boxStats(date):
         stats = None
         for g in games:
             t = pd.read_html(url_base.format(date.strftime('%Y%m%d'),g))
-            for idx in [home_full_index, away_full_index]:
+            for idx in [0, int(len(t)/2)]:
                 temp = t[idx]
                 temp.columns = temp.columns.droplevel(0)
                 temp = temp.set_index('Starters').drop('Reserves').drop('Team Totals').fillna(0)
