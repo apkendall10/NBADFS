@@ -29,7 +29,7 @@ def boxStats(date):
 
     except:
         print('No games for {}'.format(date))
-        traceback.print_exc(file = sys.stdout)
+        #traceback.print_exc(file = sys.stdout)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
