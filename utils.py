@@ -4,7 +4,7 @@ import os
 
 type_map = {
     'line': ('Lineups', 'lineup'),
-    'proj': ('Projection', 'Projections'),
+    'proj': ('Projections', 'projection'),
     'stat': ('Stats', 'stats')
 }
 
