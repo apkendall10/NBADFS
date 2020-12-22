@@ -25,6 +25,7 @@ def boxStats(date):
                 stats = temp if stats is None else stats.append(temp)
 
         stats.drop(stats[stats.MP.str[:3] == 'Did'].index, inplace=True)
+        stats.drop(stats[stats.MP.str[:3] == 'Not'].index, inplace=True)
         stats['FP'] = stats.PTS.astype('int') + stats.TRB.astype('int') * 1.2 + stats.AST.astype('int') * 1.5 + stats.BLK.astype('int') * 3 + stats.STL.astype('int') * 3 - stats.TOV.astype('int')
         stats.to_csv(format_fpath('stat', date))
     except:
