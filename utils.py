@@ -9,7 +9,7 @@ type_map = {
 }
 
 def format_fpath(type, target_date = dt.date.today()):
-    fname_base, folder = type_map[type]
+    folder, fname_base = type_map[type]
     fname = '{}_{}.csv'.format(fname_base, target_date)
     return os.path.join('..', folder, fname)
 
