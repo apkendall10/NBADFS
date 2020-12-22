@@ -1,7 +1,7 @@
 import pandas as pd
 import datetime as dt
 import numpy as np
-import argparse
+import argparse, traceback, sys
 from utils import format_fpath
 
 def boxStats(date):
@@ -29,6 +29,7 @@ def boxStats(date):
         stats.to_csv(format_fpath('stat', date))
     except:
         print('No games for {}'.format(date))
+        traceback.print_exc(file = sys.stdin)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
