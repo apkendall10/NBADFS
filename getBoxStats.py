@@ -37,3 +37,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     year, month, day = [int(x) for x in args.date.split('-')]
     date = dt.date(year, month, day)
+    boxStats(date)
