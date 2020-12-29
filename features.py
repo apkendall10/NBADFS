@@ -21,7 +21,11 @@ def game_history(date, lookback):
             box = tables[game]
             off_def.append([box.iloc[1,0], box.iloc[1,1], box.iloc[0,0],current_date])
             off_def.append([box.iloc[0,0], box.iloc[0,1], box.iloc[1,0],current_date])
-    return pd.DataFrame(off_def, columns = ['Offense', 'Score', 'Defense','Date'])
+    df = pd.DataFrame(off_def, columns = ['Offense', 'Score', 'Defense','Date'])
+    team_names = team_map()
+    df.loc[:,'Offense'] = df.Offense.apply(lambda x: team_names[x])
+    df.loc[:,'Defense'] = df.Defense.apply(lambda x: team_names[x])
+    return df
 
 def calc_ratings(df, iterations = 50):
     offense = df.groupby('Offense').mean().Score.rename('ortg')
@@ -38,7 +42,4 @@ def calc_ratings(df, iterations = 50):
         offense = mapper.groupby('Offense').mean().ortg
         defense = mapper.groupby('Defense').mean().drtg
 
-    team_names = team_map()
-    defense.index = defense.index.to_series().apply(lambda x: team_names[x]).values
-    offense.index = offense.index.to_series().apply(lambda x: team_names[x]).values
     return offense, defense
