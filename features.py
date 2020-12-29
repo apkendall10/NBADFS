@@ -19,8 +19,8 @@ def game_history(date, lookback):
             continue
         for game in range(0,len(tables)-3,3):
             box = tables[game]
-            off_def.append([box.iloc[1,0], box.iloc[1,1], box.iloc[0,0]],current_date)
-            off_def.append([box.iloc[0,0], box.iloc[0,1], box.iloc[1,0]],current_date)
+            off_def.append([box.iloc[1,0], box.iloc[1,1], box.iloc[0,0],current_date])
+            off_def.append([box.iloc[0,0], box.iloc[0,1], box.iloc[1,0],current_date])
     return pd.DataFrame(off_def, columns = ['Offense', 'Score', 'Defense','Date'])
 
 def calc_ratings(df, iterations = 50):
