@@ -2,18 +2,14 @@ import pandas as pd
 import datetime as dt
 import numpy as np
 import argparse, traceback, sys
-from utils import format_fpath
+from utils import format_fpath, get_games
 
 def boxStats(date):
     try:
-        url = 'https://www.basketball-reference.com/boxscores/?month={}&day={}&year={}'.format(date.month, date.day, date.year)
-        tables = pd.read_html(url)
-
-        team_map = pd.read_csv('team_map.csv').set_index('City').code.to_dict()
-        games = [team_map[tables[x].iloc[1,0]] for x in range(0,len(tables)-3,3)]
+        games = get_games(date)
         url_base = 'https://www.basketball-reference.com/boxscores/{}0{}.html'
-
         stats = None
+        
         for g in games:
             t = pd.read_html(url_base.format(date.strftime('%Y%m%d'),g))
             for idx in [0, int(len(t)/2)]:
