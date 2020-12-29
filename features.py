@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 import os
-from utils import get_games
+from utils import get_games, team_map
 
 def game_count(date):
     return len(get_games(date))
@@ -19,9 +19,9 @@ def game_history(date, lookback):
             continue
         for game in range(0,len(tables)-3,3):
             box = tables[game]
-            off_def.append([box.iloc[1,0], box.iloc[1,1], box.iloc[0,0]])
-            off_def.append([box.iloc[0,0], box.iloc[0,1], box.iloc[1,0]])
-    return pd.DataFrame(off_def, columns = ['Offense', 'Score', 'Defense'])
+            off_def.append([box.iloc[1,0], box.iloc[1,1], box.iloc[0,0]],current_date)
+            off_def.append([box.iloc[0,0], box.iloc[0,1], box.iloc[1,0]],current_date)
+    return pd.DataFrame(off_def, columns = ['Offense', 'Score', 'Defense','Date'])
 
 def calc_ratings(df, iterations = 50):
     offense = df.groupby('Offense').mean().Score.rename('ortg')
@@ -38,4 +38,7 @@ def calc_ratings(df, iterations = 50):
         offense = mapper.groupby('Offense').mean().ortg
         defense = mapper.groupby('Defense').mean().drtg
 
+    team_names = team_map()
+    defense.index = defense.index.to_series().apply(lambda x: team_names[x]).values
+    offense.index = offense.index.to_series().apply(lambda x: team_names[x]).values
     return offense, defense
