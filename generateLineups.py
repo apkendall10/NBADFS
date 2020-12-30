@@ -3,31 +3,38 @@ import cvxpy as cp
 import cvxopt
 import pandas as pd
 import datetime as dt
-from utils import format_fpath
+from utils import format_fpath, arg_date
 
-data = pd.read_csv(format_fpath('proj'))
+def generate(date = dt.date.today(), lineups = 25, to_file = True):
 
-fp_col = 'FP'
-df = data.copy()
-pos_mat = np.transpose(df.loc[:,('isPG','isSG','isSF','isPF','isC')].to_numpy())
-cur_proj = df[fp_col].copy()
-b = np.array([2, 2, 2, 2, 1])
-sal_max = 60000
-x = cp.Variable(len(df), boolean = True)
-salary_columns = 'Cost'
-sal = df[salary_columns].to_numpy()
+    data = pd.read_csv(format_fpath('proj', date))
+    fp_col = 'FP'
+    df = data.copy()
+    pos_mat = np.transpose(df.loc[:,('isPG','isSG','isSF','isPF','isC')].to_numpy())
+    cur_proj = df[fp_col].copy()
+    b = np.array([2, 2, 2, 2, 1])
+    sal_max = 60000
+    x = cp.Variable(len(df), boolean = True)
+    salary_columns = 'Cost'
+    sal = df[salary_columns].to_numpy()
+    selections = None
 
-selections = None
+    for round in range(1,lineups+1):
+        c = cur_proj.to_numpy()
+        objective = cp.Maximize(x.T @ c)
+        constraints = [pos_mat @ x == b, x >= 0, x <= 1, x.T @ sal <= sal_max] #pos_mat @ x >= b_low
+        prob = cp.Problem(objective, constraints)
+        prob.solve(solver = 'GLPK_MI')
+        picks = df.iloc[x.value == 1].copy()
+        picks['round'] = round
+        selections = picks if selections is None else selections.append(picks)
+        cur_proj.loc[picks.index] = cur_proj.loc[picks.index].values * .95
 
-for round in range(1,26):
-    c = cur_proj.to_numpy()
-    objective = cp.Maximize(x.T @ c)
-    constraints = [pos_mat @ x == b, x >= 0, x <= 1, x.T @ sal <= sal_max] #pos_mat @ x >= b_low
-    prob = cp.Problem(objective, constraints)
-    result = prob.solve(solver = 'GLPK_MI')
-    picks = df.iloc[x.value == 1].copy()
-    picks['round'] = round
-    selections = picks if selections is None else selections.append(picks)
-    cur_proj.loc[picks.index] = cur_proj.loc[picks.index].values * .95
+    if to_file:
+        selections.to_csv(format_fpath('line'), index = False)
+    else:
+        return selections
 
-selections.to_csv(format_fpath('line'), index = False)
+if __name__ == "__main__":
+    date = arg_date()
+    generate(date)

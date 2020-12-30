@@ -8,7 +8,7 @@ def parse_player(player):
     return temp[1], temp[2], temp[5], temp[3], temp[6]
 
 url = "https://www.numberfire.com/nba/daily-fantasy/daily-basketball-projections"
-soup = BeautifulSoup(requests.get(url).text)
+soup = BeautifulSoup(requests.get(url).text, features="lxml")
 table = soup.find_all("table")
 row_marker = 0
 data = []
