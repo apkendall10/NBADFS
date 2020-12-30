@@ -2,14 +2,14 @@ import pandas as pd
 import datetime as dt
 import numpy as np
 import argparse, traceback, sys
-from utils import format_fpath, get_games
+from utils import format_fpath, get_games, arg_date
 
 def boxStats(date):
     try:
         games = get_games(date)
         url_base = 'https://www.basketball-reference.com/boxscores/{}0{}.html'
         stats = None
-        
+
         for g in games:
             t = pd.read_html(url_base.format(date.strftime('%Y%m%d'),g))
             for idx in [0, int(len(t)/2)]:
@@ -28,10 +28,6 @@ def boxStats(date):
         traceback.print_exc(file = sys.stdout)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-d', dest = 'date', default = str(dt.date.today() - dt.timedelta(days = 1)))
-    args = parser.parse_args()
-    year, month, day = [int(x) for x in args.date.split('-')]
-    date = dt.date(year, month, day)
+    date = arg_date()
     print('fetching data for {}'.format(date))
     boxStats(date)
