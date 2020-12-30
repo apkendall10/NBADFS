@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 import os
-from utils import get_games, team_map
+from utils import get_games, team_map, format_fpath, format_name
 
 def game_count(date):
     return len(get_games(date))
@@ -37,9 +37,27 @@ def calc_ratings(df, iterations = 50):
         if((mapper['new-ortg'] - mapper.ortg).abs().sum() + (mapper['new-drtg'] - mapper.drtg).abs().sum() < 1):
             print('Stopping early')
             break
-        mapper.drtg = mapper['new-drtg']
-        mapper.ortg = mapper['new-ortg']
+        mapper.drtg = (mapper['new-drtg'] + mapper.drtg)/2
+        mapper.ortg = (mapper['new-ortg'] + mapper.ortg)/2
         offense = mapper.groupby('Offense').mean().ortg
         defense = mapper.groupby('Defense').mean().drtg
 
     return offense, defense
+
+def proj_vs_actual(start_date, end_date):
+    compare = None
+    days = (end_date - start_date).days
+    for offset in range(days + 1):
+        cur_date = start_date + dt.timedelta(days = offset)
+        try:
+            stats = pd.read_csv(format_fpath('stat', cur_date))
+        except:
+            continue
+        stats.loc[:,'Starters'] = stats.Starters.apply(lambda x: format_name(x))
+        lineups = pd.read_csv(format_fpath('line',cur_date))
+        lineups.loc[:,'Name'] = lineups.Name.apply(lambda x: format_name(x))
+        combo = lineups.join(stats.set_index('Starters').FP.rename('actual'), on = 'Name').sort_values('Name').set_index('Name')
+        combo['date'] = cur_date
+        compare = combo if compare is None else compare.append(combo)
+        compare.loc[:,'date'] = pd.to_datetime(compare.date)
+    return compare
