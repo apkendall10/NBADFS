@@ -68,6 +68,23 @@ def oneHotTeams(df):
     enc.fit(np.reshape(df.index.values,(-1,1)))
     return enc
 
+def feature_columns():
+    return ['Blk',
+        'Cost',
+        'drtg',
+        'Games',
+        'Stl',
+        'l_drtg',
+        'Min',
+        'l_ortg',
+        'TO',
+        'Reb',
+        'Ast',
+        'Value',
+        'FP',
+        'ortg',
+        'Pts']
+
 def build_feature_set(date = dt.date.today()):
     proj = pd.read_csv(format_fpath('proj', date))
     team_translation(proj)
