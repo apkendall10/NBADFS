@@ -35,7 +35,7 @@ def get_games(date):
     games = [team_map[tables[x].iloc[1,0]] for x in range(0,len(tables)-3,3)]
     return games
 
-def team_translation():
+def team_translater():
     return {
         'BKN': 'BRK',
         'UTAH': 'UTA', 
@@ -47,6 +47,13 @@ def team_translation():
         'NO': 'NOP',
         'CHA': 'CHO'
     }
+
+def team_translation(df):
+    translator = team_translater()
+    if 'Team' in df.columns:
+        df.loc[:,'Team'] = df.Team.apply(lambda x: translator[x] if x in translator else x)
+    if 'Opp' in df.columns:
+        df.loc[:,'Opp'] = df.Opp.apply(lambda x: translator[x] if x in translator else x)
 
 def arg_date():
     parser = argparse.ArgumentParser()
