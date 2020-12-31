@@ -2,7 +2,8 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 import os
-from utils import get_games, team_map, format_fpath, format_name
+from utils import get_games, team_map, format_fpath, format_name, team_translation
+from sklearn.preprocessing import OneHotEncoder
 
 def game_count(date):
     return len(get_games(date))
@@ -61,3 +62,29 @@ def proj_vs_actual(start_date, end_date):
         compare = combo if compare is None else compare.append(combo)
         compare.loc[:,'date'] = pd.to_datetime(compare.date)
     return compare
+
+def oneHotTeams(df):
+    enc = OneHotEncoder(sparse = False)
+    enc.fit(np.reshape(df.index.values,(-1,1)))
+    return enc
+
+def build_feature_set(date = dt.date.today()):
+    proj = pd.read_csv(format_fpath('proj', date))
+    team_translation(proj)
+    teams = proj.Team.drop_duplicates()
+    hist = game_history(date - dt.timedelta(days = 1), 15)
+    offense, defense = calc_ratings(hist)
+    def_dict = defense.to_dict()
+    off_dict = offense.to_dict()
+    off_def = teams.apply(lambda x: off_dict[x]).rename('ortg').to_frame().join(teams.apply(lambda x: def_dict[x]).rename('drtg')).mean()
+    lineups = pd.read_csv(format_fpath('line', date))
+    team_translation(lineups)
+    lineups['ortg'] = off_def.ortg
+    lineups['drtg'] = off_def.drtg
+    lineups['Games'] = len(teams)/2
+    enc = oneHotTeams(defense)
+    defense_mat = enc.transform(np.reshape(lineups.Opp.to_numpy(),(-1,1)))
+    offense_mat = enc.transform(np.reshape(lineups.Team.to_numpy(),(-1,1)))
+    lineups['l_drtg'] = np.reshape(np.matmul(defense_mat,np.reshape(defense.values,(-1,1))),(-1))
+    lineups['l_ortg'] = np.reshape(np.matmul(offense_mat,np.reshape(offense.values,(-1,1))),(-1))
+    return lineups
