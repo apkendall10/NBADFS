@@ -55,9 +55,9 @@ def team_translation(df):
     if 'Opp' in df.columns:
         df.loc[:,'Opp'] = df.Opp.apply(lambda x: translator[x] if x in translator else x)
 
-def arg_date():
+def arg_date(default = str(dt.date.today() - dt.timedelta(days = 1))):
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', dest = 'date', default = str(dt.date.today() - dt.timedelta(days = 1)))
+    parser.add_argument('-d', dest = 'date', default = default)
     args = parser.parse_args()
     year, month, day = [int(x) for x in args.date.split('-')]
     date = dt.date(year, month, day)

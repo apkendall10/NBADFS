@@ -31,10 +31,10 @@ def generate(date = dt.date.today(), lineups = 25, to_file = True):
         cur_proj.loc[picks.index] = cur_proj.loc[picks.index].values * .95
 
     if to_file:
-        selections.to_csv(format_fpath('line'), index = False)
+        selections.to_csv(format_fpath('line', date), index = False)
     else:
         return selections
 
 if __name__ == "__main__":
     date = arg_date()
-    generate(date)
+    generate(dt.date.today())
