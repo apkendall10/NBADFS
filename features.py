@@ -36,10 +36,10 @@ def game_data(date, lookback, save = True):
         df = game_history(date, lookback)
     
     range = pd.date_range(start = date - dt.timedelta(days = date), end = date)
-    for dt in range:
-        if dt in df.Date:
+    for dat in range:
+        if dat in df.Date:
             continue
-        df.append(game_history(dt,1))
+        df.append(game_history(dat,1))
     
     if save:
         pd.to_csv(my_path, index = False)
