@@ -28,6 +28,24 @@ def game_history(date, lookback):
     df.loc[:,'Defense'] = df.Defense.apply(lambda x: team_names[x])
     return df
 
+def game_data(date, lookback, save = True):
+    my_path = '../game_data.csv'
+    try:
+        df = pd.read_csv(my_path)
+    except:
+        df = game_history(date, lookback)
+    
+    range = pd.date_range(start = date - dt.timedelta(days = date), end = date)
+    for dt in range:
+        if dt in df.Date:
+            continue
+        df.append(game_history(dt,1))
+    
+    if save:
+        pd.to_csv(my_path, index = False)
+    
+    return df.set_index('Date').loc[range]
+
 def calc_ratings(df, iterations = 50):
     offense = df.groupby('Offense').mean().Score.rename('ortg')
     defense = df.groupby('Defense').mean().Score.rename('drtg')
