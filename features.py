@@ -46,7 +46,9 @@ def game_data(date, lookback, save = True):
     if save:
         df.to_csv(my_path, index = False)
     
-    return df.set_index('Date').loc[range]
+    sample = df.set_index('Date')
+    vals = sample.index.intersection(range).values
+    return sample.loc[vals]
 
 def calc_ratings(df, iterations = 50):
     offense = df.groupby('Offense').mean().Score.rename('ortg')
