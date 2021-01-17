@@ -38,7 +38,8 @@ def game_data(date, lookback, save = True):
         df = game_history(date, lookback)
     
     df.loc[:,'Date'] = pd.to_datetime(df.Date)
-    range = pd.date_range(start = date - dt.timedelta(days = lookback), end = date)
+    start_date = max(date - dt.timedelta(days = lookback), dt.date(2020,12,23))
+    range = pd.date_range(start = start_date, end = date)
     for dat in range:
         if dat in df.Date:
             continue
