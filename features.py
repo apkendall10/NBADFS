@@ -49,7 +49,7 @@ def game_data(date, lookback, save = True):
     
     sample = df.set_index('Date')
     vals = sample.index.intersection(range).values
-    return sample.loc[vals]
+    return sample.loc[vals].convert_dtypes()
 
 def calc_ratings(df, iterations = 50):
     offense = df.groupby('Offense').mean().Score.rename('ortg')
