@@ -37,6 +37,7 @@ def game_data(date, lookback, save = True):
     except:
         df = game_history(date, lookback)
     
+    df.loc[:,'Date'] = pd.to_datetime(df.Date)
     range = pd.date_range(start = date - dt.timedelta(days = lookback), end = date)
     for dat in range:
         if dat in df.Date:
@@ -48,6 +49,7 @@ def game_data(date, lookback, save = True):
     
     sample = df.set_index('Date')
     vals = sample.index.intersection(range).values
+    print(vals)
     return sample.loc[vals]
 
 def calc_ratings(df, iterations = 50):
