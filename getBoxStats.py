@@ -10,13 +10,20 @@ def boxStats(date):
         url_base = 'https://www.basketball-reference.com/boxscores/{}0{}.html'
         stats = None
 
-        for g in games:
-            t = pd.read_html(url_base.format(date.strftime('%Y%m%d'),g))
+        for home, away in games:
+            t = pd.read_html(url_base.format(date.strftime('%Y%m%d'),home))
             for idx in [0, int(len(t)/2)]:
                 temp = t[idx]
                 temp.columns = temp.columns.droplevel(0)
                 temp = temp.set_index('Starters').drop('Reserves').drop('Team Totals').fillna(0)
-                temp['Loc'] = 'Away' if idx == 0 else 'Home'
+                if idx == 0:
+                    temp['Loc'] = 'Away'
+                    temp['Team'] = away
+                    temp['Opp'] = home
+                else: 
+                    temp['Loc'] = 'Home'
+                    temp['Team'] = home
+                    temp['Opp'] = away
                 stats = temp if stats is None else stats.append(temp)
 
         stats.drop(stats[stats.MP.str[:3] == 'Did'].index, inplace=True)

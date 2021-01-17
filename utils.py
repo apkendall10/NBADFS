@@ -32,7 +32,7 @@ def get_games(date):
     url = 'https://www.basketball-reference.com/boxscores/?month={}&day={}&year={}'.format(date.month, date.day, date.year)
     tables = pd.read_html(url)
     team_map = pd.read_csv('team_map.csv').set_index('City').code.to_dict()
-    games = [team_map[tables[x].iloc[1,0]] for x in range(0,len(tables)-3,3)]
+    games = [(team_map[tables[x].iloc[1,0]], team_map[tables[x].iloc[0,0]]) for x in range(0,len(tables)-3,3)]
     return games
 
 def team_translater():

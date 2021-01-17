@@ -110,6 +110,7 @@ def feature_columns():
         'Pts']
 
 def build_feature_set(date = dt.date.today()):
+
     proj = pd.read_csv(format_fpath('proj', date))
     team_translation(proj)
     teams = proj.Team.drop_duplicates()
