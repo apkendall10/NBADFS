@@ -44,7 +44,7 @@ def game_data(date, lookback, save = True):
         df.append(game_history(dat,1))
     
     if save:
-        pd.to_csv(my_path, index = False)
+        df.to_csv(my_path, index = False)
     
     return df.set_index('Date').loc[range]
 
