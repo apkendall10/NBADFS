@@ -49,7 +49,6 @@ def game_data(date, lookback, save = True):
     
     sample = df.set_index('Date')
     vals = sample.index.intersection(range).values
-    print(vals)
     return sample.loc[vals]
 
 def calc_ratings(df, iterations = 50):
