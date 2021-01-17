@@ -42,7 +42,7 @@ def game_data(date, lookback, save = True):
     for dat in range:
         if dat in df.Date:
             continue
-        df.append(game_history(dat,1))
+        df = df.append(game_history(dat,1))
     
     if save:
         df.to_csv(my_path, index = False)
