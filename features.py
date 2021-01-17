@@ -107,7 +107,7 @@ def build_feature_set(date = dt.date.today()):
     proj = pd.read_csv(format_fpath('proj', date))
     team_translation(proj)
     teams = proj.Team.drop_duplicates()
-    hist = game_history(date - dt.timedelta(days = 1), 15)
+    hist = game_data(date - dt.timedelta(days = 1), 15)
     offense, defense = calc_ratings(hist)
     def_dict = defense.to_dict()
     off_dict = offense.to_dict()
