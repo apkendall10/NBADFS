@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 import os
+
+from pandas.tseries import offsets
 from utils import get_games, team_map, format_fpath, format_name, team_translation
 from sklearn.preprocessing import OneHotEncoder
 
@@ -35,7 +37,7 @@ def game_data(date, lookback, save = True):
     except:
         df = game_history(date, lookback)
     
-    range = pd.date_range(start = date - dt.timedelta(days = date), end = date)
+    range = pd.date_range(start = date - dt.timedelta(days = lookback), end = date)
     for dat in range:
         if dat in df.Date:
             continue
