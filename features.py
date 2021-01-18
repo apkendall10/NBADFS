@@ -163,4 +163,4 @@ def fp_score(cur_date, lookback):
         mapper.ortg = (mapper['new-ortg'] + mapper.ortg)/2
         offense = mapper.groupby('Offense').mean().ortg
         defense = mapper.groupby('Defense').mean().drtg
-    defense.to_csv(format_fpath('score',date))
+    defense.to_csv(format_fpath('score',cur_date))
