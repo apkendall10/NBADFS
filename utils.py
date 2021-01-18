@@ -23,6 +23,8 @@ def strip_accents(s):
                   if unicodedata.category(c) != 'Mn')
 
 def format_name(name):
+  if name == 'Patrick Mills':
+      name = 'Patty Mills'
   name = strip_accents(name)
   parts = name.split(' ')
   parts[0] = parts[0].replace('.','')
