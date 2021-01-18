@@ -7,7 +7,8 @@ import argparse
 type_map = {
     'line': ('Lineups', 'lineup'),
     'proj': ('Projections', 'projection'),
-    'stat': ('Stats', 'stats')
+    'stat': ('Stats', 'stats'),
+    'score': ('Scores', 'score')
 }
 
 def format_fpath(type, target_date = dt.date.today()):

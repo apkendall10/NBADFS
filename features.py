@@ -140,3 +140,27 @@ def build_feature_set(date = dt.date.today()):
     lineups['l_drtg'] = np.reshape(np.matmul(defense_mat,np.reshape(defense.values,(-1,1))),(-1))
     lineups['l_ortg'] = np.reshape(np.matmul(offense_mat,np.reshape(offense.values,(-1,1))),(-1))
     return lineups
+
+def fp_score(cur_date, lookback):
+    stats = None
+    for date in pd.date_range(cur_date - dt.timedelta(days = lookback),cur_date):
+        try:
+            temp = pd.read_csv(format_fpath('stat',date.date()))
+            temp['Date'] = date
+        except:
+            continue
+        stats = temp if stats is None else stats.append(temp)
+
+    df = game_data(cur_date,lookback)
+    df = df.join(df.index.to_frame()).set_index(['Date', 'Offense']).join(stats.groupby(['Date','Team']).sum().FP, on = ['Date', 'Offense']).dropna()
+    offense = df.groupby('Offense').mean().FP.rename('ortg')
+    defense = df.groupby('Defense').mean().FP.rename('drtg')
+    for _ in range(20):
+        mapper = df.join(offense, on = 'Offense').join(defense, on = 'Defense')
+        mapper['new-ortg'] = mapper.FP * 2 - mapper['drtg']
+        mapper['new-drtg'] = mapper.FP * 2 - mapper['ortg']
+        mapper.drtg = (mapper['new-drtg'] + mapper.drtg)/2
+        mapper.ortg = (mapper['new-ortg'] + mapper.ortg)/2
+        offense = mapper.groupby('Offense').mean().ortg
+        defense = mapper.groupby('Defense').mean().drtg
+    defense.to_csv(format_fpath('score',date))
