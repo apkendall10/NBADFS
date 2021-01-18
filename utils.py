@@ -64,11 +64,11 @@ def arg_date(default = str(dt.date.today() - dt.timedelta(days = 1))):
     return date
 
 def player_team_map():
-    return pd.read_csv('Player-Team-Map.csv').set_index('Starters').to_dict()
+    return pd.read_csv('Player-Team-Map.csv').set_index('Starters')
 
 def update_player_team_map():
     stats = None
-    for date in pd.date_range(end = dt.date.today() - dt.timedelta(days = 1), periods = 7):
+    for date in pd.date_range(end = dt.date.today() - dt.timedelta(days = 1), periods = 28):
         try:
             temp = pd.read_csv(format_fpath('stat',date.date()))
             temp['Date'] = date

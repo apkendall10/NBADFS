@@ -4,7 +4,7 @@ import datetime as dt
 import os
 
 from pandas.tseries import offsets
-from utils import get_games, team_map, format_fpath, format_name, team_translation
+from utils import get_games, team_map, format_fpath, format_name, team_translation, player_team_map
 from sklearn.preprocessing import OneHotEncoder
 
 def game_count(date):
@@ -83,7 +83,7 @@ def proj_vs_actual(start_date, end_date):
         lineups.loc[:,'Name'] = lineups.Name.apply(lambda x: format_name(x))
         combo = lineups.join(stats.set_index('Starters').FP.rename('actual'), on = 'Name').sort_values('Name').set_index('Name')
         combo['date'] = cur_date
-        mapper = pd.read_csv('Player-Team-Map.csv').set_index('Starters')
+        mapper = player_team_map()
         combo['PTeam'] = combo.index.to_series().apply(lambda x: mapper.loc[x])
         combo['Loc'] = combo.apply(lambda x: 'Home' if x.PTeam == x.Team else 'Away', axis = 1)
         combo['Name'] = combo.index.values
