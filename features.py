@@ -83,6 +83,16 @@ def proj_vs_actual(start_date, end_date):
         lineups.loc[:,'Name'] = lineups.Name.apply(lambda x: format_name(x))
         combo = lineups.join(stats.set_index('Starters').FP.rename('actual'), on = 'Name').sort_values('Name').set_index('Name')
         combo['date'] = cur_date
+        mapper = pd.read_csv('Player-Team-Map.csv').set_index('Starters')
+        combo['PTeam'] = combo.index.to_series().apply(lambda x: mapper.loc[x])
+        combo['Loc'] = combo.apply(lambda x: 'Home' if x.PTeam == x.Team else 'Away', axis = 1)
+        combo['Name'] = combo.index.values
+        combo.index = range(len(combo))
+        away = combo[combo.Loc == 'Away'].index
+        temp = combo.loc[away,'Team'] 
+        combo.loc[away,'Team'] = combo.loc[away,'Opp'] 
+        combo.loc[away,'Opp'] = temp
+        combo.set_index('Name')
         compare = combo if compare is None else compare.append(combo)
         compare.loc[:,'date'] = pd.to_datetime(compare.date)
     return compare
