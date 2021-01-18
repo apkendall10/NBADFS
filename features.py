@@ -117,7 +117,8 @@ def feature_columns():
         'Value',
         'FP',
         'ortg',
-        'Pts']
+        'Pts',
+        'dscore']
 
 def build_feature_set(date = dt.date.today()):
 
@@ -139,6 +140,7 @@ def build_feature_set(date = dt.date.today()):
     offense_mat = enc.transform(np.reshape(lineups.Team.to_numpy(),(-1,1)))
     lineups['l_drtg'] = np.reshape(np.matmul(defense_mat,np.reshape(defense.values,(-1,1))),(-1))
     lineups['l_ortg'] = np.reshape(np.matmul(offense_mat,np.reshape(offense.values,(-1,1))),(-1))
+    lineups['dscore'] = np.reshape(np.matmul(offense_mat, np.reshape(pd.read_csv(format_fpath('score',date - dt.timedelta(days = 1))).set_index('Defense').values,(-1,1))),(-1))
     return lineups
 
 def fp_score(cur_date, lookback):
