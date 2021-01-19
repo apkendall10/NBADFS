@@ -84,7 +84,9 @@ def proj_vs_actual(start_date, end_date):
         combo = lineups.join(stats.set_index('Starters').FP.rename('actual'), on = 'Name').sort_values('Name').set_index('Name')
         combo['date'] = cur_date
         mapper = player_team_map()
-        combo['PTeam'] = combo.index.to_series().apply(lambda x: mapper.loc[x] if x in mapper.keys() else 'UNK')
+        listed = combo.index.to_series().apply(lambda x: x in mapper.index)
+        combo['PTeam'] = 'UNK'
+        combo.loc[listed, 'PTeam'] = combo[listed].index.to_series().apply(lambda x: mapper.loc[x]).values
         combo['Loc'] = combo.apply(lambda x: 'Home' if x.PTeam == x.Team else 'Away', axis = 1)
         combo['Name'] = combo.index.values
         combo.index = range(len(combo))
