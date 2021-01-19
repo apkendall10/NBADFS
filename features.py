@@ -84,7 +84,7 @@ def proj_vs_actual(start_date, end_date):
         combo = lineups.join(stats.set_index('Starters').FP.rename('actual'), on = 'Name').sort_values('Name').set_index('Name')
         combo['date'] = cur_date
         mapper = player_team_map()
-        combo['PTeam'] = combo.index.to_series().apply(lambda x: mapper.loc[x])
+        combo['PTeam'] = combo.index.to_series().apply(lambda x: mapper.loc[x] if x in mapper.keys() else 'UNK')
         combo['Loc'] = combo.apply(lambda x: 'Home' if x.PTeam == x.Team else 'Away', axis = 1)
         combo['Name'] = combo.index.values
         combo.index = range(len(combo))
@@ -140,7 +140,7 @@ def build_feature_set(date = dt.date.today()):
     offense_mat = enc.transform(np.reshape(lineups.Team.to_numpy(),(-1,1)))
     lineups['l_drtg'] = np.reshape(np.matmul(defense_mat,np.reshape(defense.values,(-1,1))),(-1))
     lineups['l_ortg'] = np.reshape(np.matmul(offense_mat,np.reshape(offense.values,(-1,1))),(-1))
-    lineups['dscore'] = np.reshape(np.matmul(offense_mat, np.reshape(pd.read_csv(format_fpath('score',date - dt.timedelta(days = 1))).set_index('Defense').values,(-1,1))),(-1))
+    lineups['dscore'] = np.reshape(np.matmul(defense_mat, np.reshape(pd.read_csv(format_fpath('score',date - dt.timedelta(days = 1))).set_index('Defense').values,(-1,1))),(-1))
     return lineups
 
 def fp_score(cur_date, lookback):
