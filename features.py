@@ -10,6 +10,7 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import normalize
 from getBoxStats import statRange
+import joblib
 
 def game_count(date):
     return len(get_games(date))
@@ -178,4 +179,5 @@ def pos_rank(start_date, end_date):
     averages['cat'] = kmean.labels_
     stats['perf'] = (stats.FP - stats.avg)/stats['std']
     stats = stats.join(averages.cat, on = 'Starters').fillna(-1)
+    joblib.dump((pca,kmeans))
     return stats.groupby(['Opp','cat']).median().perf
