@@ -35,6 +35,17 @@ def boxStats(date):
         print('No games for {}'.format(date))
         traceback.print_exc(file = sys.stdout)
 
+def statRange(start_date, end_date):
+    stats = None
+    for date in pd.date_range(start_date,end_date):
+        try:
+            temp = pd.read_csv(format_fpath('stat',date.date()))
+            temp['Date'] = date
+        except:
+            continue
+        stats = temp if stats is None else stats.append(temp)
+    return stats
+
 if __name__ == "__main__":
     date = arg_date()
     print('fetching data for {}'.format(date))

@@ -6,6 +6,10 @@ import os
 from pandas.tseries import offsets
 from utils import get_games, team_map, format_fpath, format_name, team_translation, player_team_map
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import normalize
+from getBoxStats import statRange
 
 def game_count(date):
     return len(get_games(date))
@@ -123,7 +127,6 @@ def feature_columns():
         'dscore']
 
 def build_feature_set(date = dt.date.today()):
-
     proj = pd.read_csv(format_fpath('proj', date))
     team_translation(proj)
     teams = proj.Team.drop_duplicates()
@@ -146,15 +149,7 @@ def build_feature_set(date = dt.date.today()):
     return lineups
 
 def fp_score(cur_date, lookback):
-    stats = None
-    for date in pd.date_range(cur_date - dt.timedelta(days = lookback),cur_date):
-        try:
-            temp = pd.read_csv(format_fpath('stat',date.date()))
-            temp['Date'] = date
-        except:
-            continue
-        stats = temp if stats is None else stats.append(temp)
-
+    stats = statRange(cur_date - dt.timedelta(days = lookback),cur_date)
     df = game_data(cur_date,lookback)
     df = df.join(df.index.to_frame()).set_index(['Date', 'Offense']).join(stats.groupby(['Date','Team']).sum().FP, on = ['Date', 'Offense']).dropna()
     offense = df.groupby('Offense').mean().FP.rename('ortg')
@@ -168,3 +163,19 @@ def fp_score(cur_date, lookback):
         offense = mapper.groupby('Offense').mean().ortg
         defense = mapper.groupby('Defense').mean().drtg
     defense.to_csv(format_fpath('score',cur_date))
+
+def pos_rank(start_date, end_date):
+    stats = statRange(start_date, end_date)
+    avg = stats.groupby('Starters').mean().FP.rename('avg')
+    std = stats.groupby('Starters').std().FP.rename('std')
+    stats = stats.join(avg, on = 'Starters').join(std, on = 'Starters')
+    averages = stats.groupby('Starters').mean()
+    averages = averages[averages.FP > 15]
+    X = normalize(averages.values)
+    pca = PCA(5)
+    kmean = KMeans(7)
+    kmean.fit(pca.fit_transform(X, 5))
+    averages['cat'] = kmean.labels_
+    stats['perf'] = (stats.FP - stats.avg)/stats['std']
+    stats = stats.join(averages.cat, on = 'Starters').fillna(-1)
+    return stats.groupby(['Opp','cat']).median().perf
