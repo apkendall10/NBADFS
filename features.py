@@ -167,7 +167,7 @@ def fp_score(cur_date, lookback):
 def pos_rank(start_date, end_date):
     stats = statRange(start_date, end_date)
     avg = stats.groupby('Starters').mean().FP.rename('avg')
-    std = stats.groupby('Starters').std().FP.rename('std')
+    std = stats.groupby('Starters').std().FP.rename('std').fillna(1)
     stats = stats.join(avg, on = 'Starters').join(std, on = 'Starters')
     averages = stats.groupby('Starters').mean()
     averages = averages[averages.FP > 15]
