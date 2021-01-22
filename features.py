@@ -167,9 +167,6 @@ def fp_score(cur_date, lookback):
 
 def pos_rank(start_date, end_date):
     stats = statRange(start_date, end_date)
-    avg = stats.groupby('Starters').mean().FP.rename('avg')
-    std = stats.groupby('Starters').std().FP.rename('std').fillna(1)
-    stats = stats.join(avg, on = 'Starters').join(std, on = 'Starters')
     averages = stats.groupby('Starters').mean()
     averages = averages[averages.FP > 15]
     X = normalize(averages.values)
@@ -177,7 +174,11 @@ def pos_rank(start_date, end_date):
     kmean = KMeans(7)
     kmean.fit(pca.fit_transform(X, 5))
     averages['cat'] = kmean.labels_
-    stats['perf'] = (stats.FP - stats.avg)/stats['std']
     stats = stats.join(averages.cat, on = 'Starters').fillna(-1)
-    joblib.dump((pca,kmeans))
+    joblib.dump((pca, kmean), 'pos_funcs.joblib')
+
+    avg = stats.groupby('Starters').mean().FP.rename('avg')
+    std = stats.groupby('Starters').std().FP.rename('std').fillna(1)
+    stats = stats.join(avg, on = 'Starters').join(std, on = 'Starters')
+    stats['perf'] = (stats.FP - stats.avg)/stats['std']
     return stats.groupby(['Opp','cat']).median().perf

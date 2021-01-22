@@ -3,11 +3,12 @@ import cvxpy as cp
 import cvxopt
 import pandas as pd
 import datetime as dt
+from getProjections import get_proj
 from utils import format_fpath, arg_date
 
 def generate(date = dt.date.today(), lineups = 25, to_file = True):
 
-    data = pd.read_csv(format_fpath('proj', date))
+    data = get_proj(date)
     fp_col = 'FP'
     df = data.copy()
     pos_mat = np.transpose(df.loc[:,('isPG','isSG','isSF','isPF','isC')].to_numpy())
