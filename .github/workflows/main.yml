@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Test
 
 # Controls when the action will run. 
 on:
@@ -27,6 +27,24 @@ jobs:
         run: |
           curl --request POST \
           --url https://api.github.com/projects/columns/14500932/cards \
+          --header "Accept: application/vnd.github.inertia-preview+json" \
+          --header "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          --data '{"content_id": ${{ github.event.issue.id }}, "content_type": "Issue"}'
+
+# This workflow contains a single job called "build"
+  addissue2:
+    name: Add issue to project 2
+    
+    # PR must must be merged, not closed
+    if: contains(github.event.issue.labels.*.name, 'bug') && contains(github.event.issue.labels.*.name, 'duplicate')
+    
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Add to Project
+        run: |
+          curl --request POST \
+          --url https://api.github.com/projects/columns/14501449/cards \
           --header "Accept: application/vnd.github.inertia-preview+json" \
           --header "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           --data '{"content_id": ${{ github.event.issue.id }}, "content_type": "Issue"}'
