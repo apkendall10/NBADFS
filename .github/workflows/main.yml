@@ -23,7 +23,7 @@ jobs:
       - name: Add to Project
         run: |
           curl --request POST \
-          --url https://github.com/apkendall10/NBADFS/projects/1#column-14500932 \
+          --url https://api.github.com/projects/columns/14500932/cards \
           --header "Accept: application/vnd.github.inertia-preview+json" \
           --header "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           --data '{"content_id": ${{ github.event.issue.id }}, "content_type": "Issue"}'
