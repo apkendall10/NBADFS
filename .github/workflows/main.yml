@@ -16,9 +16,6 @@ jobs:
   # This workflow contains a single job called "build"
   addissue:
     name: Add issue to project
-
-    # PR must must be merged, not closed
-    if: github.event.pull_request.merged
     
     runs-on: ubuntu-20.04
 
