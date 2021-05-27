@@ -44,7 +44,7 @@ jobs:
       - name: Add to Project
         run: |
           curl --request POST \
-          --url https://api.github.com/projects/columns/14501449/cards \
+          --url https://api.github.com/projects/columns/14501926/cards \
           --header "Accept: application/vnd.github.inertia-preview+json" \
           --header "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           --data '{"content_id": ${{ github.event.issue.id }}, "content_type": "Issue"}'
