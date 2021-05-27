@@ -17,6 +17,9 @@ jobs:
   addissue:
     name: Add issue to project
     
+    # PR must must be merged, not closed
+    if: contains(github.event.issue.labels.*.name, 'bug')
+    
     runs-on: ubuntu-20.04
 
     steps:
